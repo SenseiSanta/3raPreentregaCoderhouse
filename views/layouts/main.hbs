@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Entrega #11 </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/estilos.css">
+</head>
+<body>
+    {{{body}}}
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
+    <script>
+        
+        /*=============== Desnormalizacion de datos ===============*/
+        const schemaAuthors = new normalizr.schema.Entity('author', {}, {idAttribute: 'email'})
+        const schemaMensaje = new normalizr.schema.Entity('post', {author: schemaAuthors}, {idAttribute: 'id'})
+        const schemaMensajes = new normalizr.schema.Entity('posts', {mensajes: [schemaMensaje]}, {idAttribute: 'id'})
+
+        /*================ Coneccion con socket.io ================*/
+        const socket = io();
+
+        /*============== Respuestas front del scoket ==============*/
+        socket.on('from-server-message', messages =>{ //Respuesta cuando se envia mensaje
+            let mensajesNormSIZE = JSON.stringify(messages).length;
+            let mensajesDenorm = normalizr.denormalize(messages.result, schemaMensajes, messages.entities);
+            console.log(mensajesDenorm)
+            let mensajesDenormSIZE = JSON.stringify(mensajesDenorm.mensajes).length;
+            let compresion = parseInt((mensajesNormSIZE * 100) / mensajesDenormSIZE );
+            document.getElementById('compresionText').innerText = 'Compresion ' + compresion + '%'
+            renderMessages(mensajesDenorm.mensajes)
+        })
+
+            function renderMessages(mensajes) { /*=============== Renderizado de mensajes ===============*/
+                const cuerpoMensaje = mensajes.map(msg => {
+                    return `<span> <span style="color: blue; font-weight: bold">${msg.author.email}</span>
+                            <span style="color: brown"> ${msg.date}</span>
+                            :
+                            <span style="color: green; font-style: italic">${msg.text}</span></span>`
+                }).join('')
+                document.querySelector('#chatHistorial').innerHTML = cuerpoMensaje;
+            }
+
+        /*=============== Presionar boton cuando manda mensaje ===============*/
+        function enviarMensaje() {
+            const inputEmail = document.querySelector('#email')
+            if (inputEmail.value.length == 0) {
+                alert('Faltan datos')
+                return
+            }
+
+            const inputMsg = document.querySelector('#comentario')
+            const inputName = document.querySelector('#name')
+            const inputLastname = document.querySelector('#lastname')
+            const inputAge = document.querySelector('#age')
+            const inputAlias = document.querySelector('#alias')
+            const inputAvatar = document.querySelector('#avatar')
+            const fecha = new Date().toLocaleString('es-AR')
+
+            const msj = {
+                author: {
+                    email: inputEmail.value,
+                    nombre: inputName.value,
+                    apellido: inputLastname.value,
+                    edad: inputAge.value,
+                    alias: inputAlias.value,
+                    avatar: inputAvatar.value
+                },
+                text: inputMsg.value,
+                date: fecha
+            }
+            socket.emit('from-client-message', msj);
+        }                  
+        
+        socket.on('from-server-product', products =>{ /*============ Respuesta al cargar o agregar productos ============*/
+            console.log(products)
+            renderProducts(products)
+        })
+
+            async function renderProducts(products) { /*=============== Renderizado de productos ===============*/
+                const table = `<tr style="color: yellow;"> <th>Producto</th> <th>Precio</th> <th>Imagen</th> </tr>`;
+                const cuerpoProductos = await products.map(item => {
+                    return `
+                    <tr>
+                        <td>${item.producto}</td>
+                        <td>${item.precio}</td>
+                        <td>
+                            <img width="30px" src=${item.img} alt="Prod. img">
+                        </td>
+                    </tr>`
+                }).join('')
+                document.querySelector('#product_table').innerHTML = table+cuerpoProductos; 
+            }
+
+        function enviarProducto() {
+            const inputProduct = document.querySelector('#producto')
+            const inputPrice = document.querySelector('#precio')
+            const inputImg = document.querySelector('#img')
+
+            const producto = {
+                producto: inputProduct.value,
+                precio: inputPrice.value,
+                img: inputImg.value
+            }
+            socket.emit('from-client-product', producto);
+        }    
+ 
+    </script>
+</body>
+</html>

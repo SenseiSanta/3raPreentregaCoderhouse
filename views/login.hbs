@@ -1,0 +1,17 @@
+<div id="formContent" class="logFormContainer">
+    <!-- Icon -->
+    <div class="logMainScreen">
+        <h2 class="loginTitle"> Login </h2>
+        <div class=>
+            <img src="/static/img/userGenericImg.webp" id="icon" class="loginIcon" alt="User Icon" />
+        </div>
+        <!-- Login Form -->
+        <form class="loginForm" action="/login" method="post">
+            <input type="text" id="username" name="username" placeholder="usuario" required>
+            <input type="password" id="password" name="password" placeholder="contraseña" required>
+            <p class="successSignUpText">{{registerSuccess}} </p>
+            <input type="submit" class='loginSubmitButton' value="Log In">
+        </form>
+        <p> No tienes cuenta? <a href="/register"> Registrate aqui </a> </p>
+    </div>
+</div>

@@ -1,0 +1,2 @@
+[2022-11-14T20:34:12.476] [ERROR] default - 14/11/2022: Error en el servidor: Error: listen EADDRINUSE: address already in use :::8080
+[2022-11-14T20:34:39.432] [ERROR] default - 14/11/2022: Error en el servidor -> Error: listen EADDRINUSE: address already in use :::8080
