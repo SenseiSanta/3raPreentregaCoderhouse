@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { logger } from '../utils/logger.js';
+import { upload } from '../../server.js';
 
 /* ============ Creacion de objeto ============ */
 import { ContenedorSQLite } from '../container/ContenedorSQLite.js';
@@ -79,20 +80,34 @@ routerInitial.use(passport.session());
 import compression from 'compression';
 import { Contenedor } from '../container/Contenedor.js';
 
+    /*---- Autenticacion ----*/
 function auth (req, res, next) {
     if (req.isAuthenticated()) {
       next()
     } else {
       res.status(401).redirect('/login')
     }
-  };
+};
 
 /* ============= Routing y metodos ============= */
+routerInitial.get('/prueba', (req, res) => {
+    res.render('prueba')
+})
+
+routerInitial.post('/prueba', (req, res) => {
+    res.send('uploaded')
+})
+
 routerInitial.get('/', compression(), auth, async (req, res) => {
-    const datosUsuario = req.user.username;
+    const username = req.user.username;
+    const phone = req.user.phone;
+    const age = req.user.age;
+    const image = req.user.image;
+    const email = req.user.email;
+    const address = req.user.address;
     const DB_PRODUCTOS = await cajaProducto.listarAll()
     const DB_MENSAJES = await cajaMensajes.getAll()
-    res.render('vista', {DB_PRODUCTOS, DB_MENSAJES, datosUsuario})
+    res.render('vista', {DB_PRODUCTOS, DB_MENSAJES, username, phone, age, image, email, address})
 })
 
 routerInitial.get('/login', async (req, res) => {
@@ -110,6 +125,7 @@ routerInitial.get('/register', async (req, res) => {
 routerInitial.post('/login', passport.authenticate('local', {successRedirect: '/', failureRedirect: '/login-error'}));
 
 routerInitial.post('/register', async (req, res) => {
+    console.log(req.file.filename)
     const { usuario, password, phone, age, address, email, image } = req.body;
     let infoUser = {
         username: usuario,
@@ -118,13 +134,13 @@ routerInitial.post('/register', async (req, res) => {
         age: age,
         address: address,
         email: email,
-        image: image
+        image: req.file.filename
     }
-    logger.info(infoUser)
     if (usuario || password) {
         let user = await cajaUsuario.getByUser(usuario)
         if (user == undefined) {
             let guardarDatos = await cajaUsuario.save(infoUser)
+            logger.info(`${infoUser.username} registrado con exito`)
             res.redirect('/login')
         } else {
             const errorRegister = 'El usuario que intenta registar ya existe, intente con otro nombre'

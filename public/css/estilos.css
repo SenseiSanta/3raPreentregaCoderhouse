@@ -105,3 +105,16 @@
     display: flex;
     justify-content: space-between;
 }
+
+.userImg{
+    width: 300px;
+    height: auto;
+    border: black 2px solid;
+}
+
+.userInfo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}

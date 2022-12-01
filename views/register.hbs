@@ -6,7 +6,7 @@
             <img src="/static/img/userGenericImg.webp" id="icon" class="loginIcon" alt="User Icon" />
         </div>
         <!-- Register Form -->
-        <form class="regForm" action="/register" method="post">
+        <form class="regForm" action="/register" method="post" name="registerForm" enctype="multipart/form-data">
             <input type="text" id="registerUser" name="usuario" placeholder="Usuario" required>
             <input type="password" id="registerPassword"  name="password" placeholder="Contraseña" required>
             <input type="tel" id="registerPhone"  name="phone" placeholder="Telefono" required>
@@ -14,8 +14,8 @@
             <input type="text" id="registerAddress"  name="address" placeholder="Dirección" required>
             <input type="email" id="registerEmail"  name="email" placeholder="Correo electrónico" required>
             <div class="imgFormDiv">
-                <label for="image"> ↓↓ Inserte una foto suya ↓↓</label>
-                <input type="file" id="registerImage"  name="image" accept=".jpg, .png" required>
+                <label> ↓↓ Inserte una foto suya ↓↓</label>
+                <input type="file" id="registerImage" name="image" required>
             </div>
             <p class="errorRegisterText"> {{errorRegister}} </p>
             <input type="submit" class='regSubmitButton' value="Sign Up">
@@ -23,4 +23,5 @@
         <p> Ya tienes cuenta? <a href="/login"> Ingresa </a> </p>
     </div>
 </div>
+
 

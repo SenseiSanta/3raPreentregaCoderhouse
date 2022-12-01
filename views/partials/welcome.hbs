@@ -1,5 +1,20 @@
 <div class="welcomeDiv">
-    <h3 style="color:rgba(94, 196, 20, 0.778);" class="welcome"> Bienvenido {{datosUsuario}} </h3>
+    <h3 style="color:rgba(94, 196, 20, 0.778);" class="welcome"> Bienvenido {{username}} </h3>
     <a href="/logout" onclick="logout()"> Logout </a>
-    
+</div>
+<p>
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Ver mis datos
+  </button>
+</p>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body userInfo">
+    <section>
+        <p> Telefono: {{phone}} </p>
+        <p> Edad: {{age}}</p>
+        <p> Email: {{email}}</p>
+        <p> Direccion: {{address}}</p>
+    </section>
+    <img src="../img/userImg/{{image}}" alt="Foto del usuario" class="userImg">
+  </div>
 </div>

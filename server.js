@@ -9,6 +9,7 @@ import morgan from "morgan";
 import minimist from "minimist";
 import os from 'os';
 import cluster from 'cluster';
+import multer from "multer";
 import util from "util";
 import { ContenedorSQLite } from "./src/container/ContenedorSQLite.js";
 import { ContenedorFirebase } from "./src/container/ContenedorFirebase.js";
@@ -28,12 +29,29 @@ import routerProductos from "./src/routes/productos.routes.js";
 import routerInitial from "./src/routes/initial.routes.js";
 import routerProductosTest from "./src/routes/productosTest.routes.js";
 
+/*================ Multer Setup ================*/
+const storage = multer.diskStorage({
+  destination: path.join('public/img/userImg'),
+  filename: (req, file, cb) => {
+    cb(null, file.originalname)
+  }
+})
+export const upload = multer({
+  storage,
+  dest: 'public/img/userImg'
+})
+
 /*================= Middlewears =================*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(compression());
 app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(multer({
+  storage,
+  dest: 'public/img/userImg'
+}).single('image'))
 
 /*================ Session Setup ================*/
 import connectMongo from 'connect-mongo'
