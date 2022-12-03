@@ -9,6 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { logger } from '../utils/logger.js';
 import { upload } from '../../server.js';
+import { registerEmailConfirmation as adminEmail } from '../utils/registerSendEmail.js';
 
 /* ============ Creacion de objeto ============ */
 import { ContenedorSQLite } from '../container/ContenedorSQLite.js';
@@ -90,14 +91,6 @@ function auth (req, res, next) {
 };
 
 /* ============= Routing y metodos ============= */
-routerInitial.get('/prueba', (req, res) => {
-    res.render('prueba')
-})
-
-routerInitial.post('/prueba', (req, res) => {
-    res.send('uploaded')
-})
-
 routerInitial.get('/', compression(), auth, async (req, res) => {
     const username = req.user.username;
     const phone = req.user.phone;
@@ -141,6 +134,7 @@ routerInitial.post('/register', async (req, res) => {
         if (user == undefined) {
             let guardarDatos = await cajaUsuario.save(infoUser)
             logger.info(`${infoUser.username} registrado con exito`)
+            adminEmail(infoUser)
             res.redirect('/login')
         } else {
             const errorRegister = 'El usuario que intenta registar ya existe, intente con otro nombre'
@@ -149,6 +143,10 @@ routerInitial.post('/register', async (req, res) => {
     } else {
         res.status(200).render('register')
     }
+})
+
+routerInitial.get('/carrito', async (req, res) => {
+    res.status(200).render('carrito')
 })
 
 routerInitial.get('/logout', async (req, res) => {
